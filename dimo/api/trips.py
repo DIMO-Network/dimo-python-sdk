@@ -4,7 +4,7 @@ class Trips:
         self._request = request_method
         self._get_auth_headers = get_auth_headers
 
-    async def trips(self, privilege_token, token_id, page=None):
+    def trips(self, privilege_token, token_id, page=None):
         params = {}
         if page is not None:
             params['page'] = [page]

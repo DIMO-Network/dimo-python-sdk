@@ -3,11 +3,11 @@ class Telemetry:
         self.dimo = dimo_instance
     
     # Primary query method
-    async def query(self, query, token):
-        return await self.dimo.query('Telemetry', query, token=token)
+    def query(self, query, token):
+        return self.dimo.query('Telemetry', query, token=token)
     
     # Sample query - get signals latest
-    async def get_signals_latest(self, token, token_id):
+    def get_signals_latest(self, token, token_id):
         query = """
         query GetSignalsLatest($tokenId: Int!) {
             signalsLatest(tokenId: $tokenId){
@@ -34,10 +34,10 @@ class Telemetry:
             "tokenId": token_id
         }
 
-        return await self.dimo.query('Telemetry', query, token=token, variables=variables)
+        return self.dimo.query('Telemetry', query, token=token, variables=variables)
     
     # Sample query - daily signals from autopi
-    async def get_daily_signals_autopi(self, token, token_id, start_date, end_date):
+    def get_daily_signals_autopi(self, token, token_id, start_date, end_date):
         query = """
         query GetDailySignalsAutopi($tokenId: Int!, $startDate: Time!, $endDate: Time!) {
             signals(
@@ -64,10 +64,10 @@ class Telemetry:
             "endDate": end_date
         }
 
-        return await self.dimo.query('Telemetry', query, token=token, variables=variables)
+        return self.dimo.query('Telemetry', query, token=token, variables=variables)
     
     # Sample query - daily average speed of a specific vehicle
-    async def get_daily_average_speed(self, token, token_id, start_date, end_date):
+    def get_daily_average_speed(self, token, token_id, start_date, end_date):
         query = """
         query GetDailyAverageSpeed($tokenId: Int!, $startDate: Time!, $endDate: Time!) {
          signals (
@@ -88,10 +88,10 @@ class Telemetry:
             "endDate": end_date
         }
 
-        return await self.dimo.query('Telemetry', query, token=token, variables=variables)
+        return self.dimo.query('Telemetry', query, token=token, variables=variables)
     
     # Sample query - daily max speed of a specific vehicle
-    async def get_daily_max_speed(self, token, token_id, start_date, end_date):
+    def get_daily_max_speed(self, token, token_id, start_date, end_date):
         query = """
         query GetMaxSpeed($tokenId: Int!, $startDate: Time!, $endDate: Time!) {
             signals(
@@ -112,7 +112,7 @@ class Telemetry:
             "endDate": end_date
         }
 
-        return await self.dimo.query('Telemetry', query, token=token, variables=variables)
+        return self.dimo.query('Telemetry', query, token=token, variables=variables)
     
     # TODO: Update with Attestation API 
     # Sample query - get the VIN of a specific vehicle 

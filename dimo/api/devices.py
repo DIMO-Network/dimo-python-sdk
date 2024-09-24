@@ -4,7 +4,7 @@ class Devices:
         self._request = request_method
         self._get_auth_headers = get_auth_headers
 
-    async def create_vehicle(self, access_token, country_code, device_definition_id):
+    def create_vehicle(self, access_token, country_code, device_definition_id):
         body = {
             'countryCode': country_code,
             'deviceDefinitionId': device_definition_id
@@ -17,7 +17,7 @@ class Devices:
             data=body
         )
 
-    async def create_vehicle_from_smartcar(self, access_token, code, country_code, redirect_uri):
+    def create_vehicle_from_smartcar(self, access_token, code, country_code, redirect_uri):
         body = {
             'code': code,
             'countryCode': country_code,
@@ -31,7 +31,7 @@ class Devices:
             data=body
         )
 
-    async def create_vehicle_from_vin(self, access_token, can_protocol, country_code, vin):
+    def create_vehicle_from_vin(self, access_token, can_protocol, country_code, vin):
         body = {
             'canProtocol': can_protocol,
             'countryCode': country_code,
@@ -45,7 +45,7 @@ class Devices:
             data=body
         )
 
-    async def update_vehicle_vin(self, access_token, user_device_id):
+    def update_vehicle_vin(self, access_token, user_device_id):
         url = f'/v1/user/devices/{user_device_id}/vin'
         return self._request(
             'PATCH',
@@ -54,7 +54,7 @@ class Devices:
             headers=self._get_auth_headers(access_token)
         )
 
-    async def get_claiming_payload(self, access_token, serial):
+    def get_claiming_payload(self, access_token, serial):
         url = f'/v1/aftermarket/device/by-serial/{serial}/commands/claim'
         return self._request(
             'POST',
@@ -63,7 +63,7 @@ class Devices:
             headers=self._get_auth_headers(access_token)
         )
 
-    async def sign_claiming_payload(self, access_token, serial, claim_request):
+    def sign_claiming_payload(self, access_token, serial, claim_request):
         body = {
             'claimRequest': claim_request
         }
@@ -76,7 +76,7 @@ class Devices:
             data=body
         )
 
-    async def get_minting_payload(self, access_token, user_device_id):
+    def get_minting_payload(self, access_token, user_device_id):
         url = f'/v1/user/devices/{user_device_id}/commands/mint'
         return self._request(
             'POST',
@@ -85,7 +85,7 @@ class Devices:
             headers=self._get_auth_headers(access_token)
         )
 
-    async def sign_minting_payload(self, access_token, user_device_id, mint_request):
+    def sign_minting_payload(self, access_token, user_device_id, mint_request):
         body = {
             'mintRequest': mint_request
         }
@@ -98,7 +98,7 @@ class Devices:
             data=body
         )
 
-    async def opt_in_share_data(self, access_token, user_device_id):
+    def opt_in_share_data(self, access_token, user_device_id):
         url = f'/v1/user/devices/{user_device_id}/commands/opt-in'
         return self._request(
             'POST',
@@ -107,7 +107,7 @@ class Devices:
             headers=self._get_auth_headers(access_token)
         )
 
-    async def refresh_smartcar_data(self, access_token, user_device_id):
+    def refresh_smartcar_data(self, access_token, user_device_id):
         url = f'/v1/user/devices/{user_device_id}/commands/refresh'
         return self._request(
             'POST',
@@ -116,7 +116,7 @@ class Devices:
             headers=self._get_auth_headers(access_token)
         )
 
-    async def get_pairing_payload(self, access_token, user_device_id):
+    def get_pairing_payload(self, access_token, user_device_id):
         url = f'/v1/user/devices/{user_device_id}/aftermarket/commands/pair'
         return self._request(
             'GET',
@@ -125,7 +125,7 @@ class Devices:
             headers=self._get_auth_headers(access_token)
         )
 
-    async def sign_pairing_payload(self, access_token, user_device_id, user_signature):
+    def sign_pairing_payload(self, access_token, user_device_id, user_signature):
         body = {
             'userSignature': user_signature
         }
@@ -138,7 +138,7 @@ class Devices:
             data=body
         )
 
-    async def get_unpairing_payload(self, access_token, user_device_id):
+    def get_unpairing_payload(self, access_token, user_device_id):
         url = f'/v1/user/devices/{user_device_id}/aftermarket/commands/unpair'
         return self._request(
             'GET',
@@ -147,7 +147,7 @@ class Devices:
             headers=self._get_auth_headers(access_token)
         )
 
-    async def sign_unpairing_payload(self, access_token, user_device_id, user_signature):
+    def sign_unpairing_payload(self, access_token, user_device_id, user_signature):
         body = {
             'userSignature': user_signature
         }
@@ -160,7 +160,7 @@ class Devices:
             data=body
         )
 
-    async def lock_doors(self, privilege_token, token_id):
+    def lock_doors(self, privilege_token, token_id):
         url = f'/v1/vehicle/{token_id}/commands/doors/lock'
         return self._request(
             'POST',
@@ -169,7 +169,7 @@ class Devices:
             headers=self._get_auth_headers(privilege_token)
         )
 
-    async def unlock_doors(self, privilege_token, token_id):
+    def unlock_doors(self, privilege_token, token_id):
         url = f'/v1/vehicle/{token_id}/commands/doors/unlock'
         return self._request(
             'POST',
@@ -178,7 +178,7 @@ class Devices:
             headers=self._get_auth_headers(privilege_token)
         )
 
-    async def open_frunk(self, privilege_token, token_id):
+    def open_frunk(self, privilege_token, token_id):
         url = f'/v1/vehicle/{token_id}/commands/frunk/open'
         return self._request(
             'POST',
@@ -187,7 +187,7 @@ class Devices:
             headers=self._get_auth_headers(privilege_token)
         )
 
-    async def open_trunk(self, privilege_token, token_id):
+    def open_trunk(self, privilege_token, token_id):
         url = f'/v1/vehicle/{token_id}/commands/trunk/open'
         return self._request(
             'POST',
@@ -196,7 +196,7 @@ class Devices:
             headers=self._get_auth_headers(privilege_token)
         )
 
-    async def list_error_codes(self, access_token, user_device_id):
+    def list_error_codes(self, access_token, user_device_id):
         url = f'/v1/user/devices/{user_device_id}/error-codes'
         return self._request(
             'GET',
@@ -205,7 +205,7 @@ class Devices:
             headers=self._get_auth_headers(access_token)
         )
 
-    async def submit_error_codes(self, access_token, user_device_id, query_device_error_codes):
+    def submit_error_codes(self, access_token, user_device_id, query_device_error_codes):
         body = {
             'queryDeviceErrorCodes': query_device_error_codes
         }
@@ -218,7 +218,7 @@ class Devices:
             data=body
         )
 
-    async def clear_error_codes(self, access_token, user_device_id):
+    def clear_error_codes(self, access_token, user_device_id):
         url = f'/v1/user/devices/{user_device_id}/error-codes/clear'
         return self._request(
             'POST',
@@ -227,7 +227,7 @@ class Devices:
             headers=self._get_auth_headers(access_token)
         )
 
-    async def get_aftermarket_device(self, token_id):
+    def get_aftermarket_device(self, token_id):
         url = f'/v1/aftermarket/device/{token_id}'
         self._request(
             'GET',
@@ -235,7 +235,7 @@ class Devices:
             url
         )
 
-    async def get_aftermarket_device_image(self, token_id):
+    def get_aftermarket_device_image(self, token_id):
         url = f'/v1/aftermarket/device/{token_id}/image'
         self._request(
             'GET',
@@ -243,7 +243,7 @@ class Devices:
             url
         )
 
-    async def get_aftermarket_device_metadata_by_address(self, address):
+    def get_aftermarket_device_metadata_by_address(self, address):
         url = f'/v1/aftermarket/device/by-address/{address}'
         self._request(
             'GET',

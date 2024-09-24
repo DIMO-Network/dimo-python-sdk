@@ -4,7 +4,7 @@ class Events:
         self._request = request_method
         self._get_auth_headers = get_auth_headers
 
-    async def get_events(self, access_token):
+    def get_events(self, access_token):
         return self._request(
             'GET',
             'Events',

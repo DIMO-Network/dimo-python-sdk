@@ -4,7 +4,7 @@ class User:
         self._request = request_method
         self._get_auth_headers = get_auth_headers
 
-    async def user(self, access_token):
+    def user(self, access_token):
         return self._request(
             'GET',
             'User',
@@ -12,7 +12,7 @@ class User:
             headers=self._get_auth_headers(access_token)
         )
 
-    async def update_user(self, access_token, update_user_request):
+    def update_user(self, access_token, update_user_request):
         body = {
             'updateUserRequest': update_user_request
         }
@@ -24,7 +24,7 @@ class User:
             headers=self._get_auth_headers(access_token)
         )
 
-    async def delete_user(self, access_token):
+    def delete_user(self, access_token):
         return self._request(
             'DELETE',
             'User',
@@ -32,7 +32,7 @@ class User:
             headers=self._get_auth_headers(access_token)
         )
 
-    async def send_confirmation_email(self, access_token):
+    def send_confirmation_email(self, access_token):
         return self._request(
             'POST',
             'User',
@@ -40,7 +40,7 @@ class User:
             headers=self._get_auth_headers(access_token)
         )
 
-    async def confirm_email(self, access_token, confirm_email_request):
+    def confirm_email(self, access_token, confirm_email_request):
         body = {
             'confirmEmailRequest': confirm_email_request
         }
