@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dimo-python-sdk"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name="Barrett Kowalsky", email="barrettkowalsky@gmail.com" },
 ]
