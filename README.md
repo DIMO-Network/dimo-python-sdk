@@ -16,6 +16,19 @@ Coming Soon
 
 Please visit the DIMO [Developer Documentation](https://docs.dimo.zone/developer-platform) to learn more about building on DIMO and detailed information on the API.
 
+
+### Developer License
+
+In order to build on DIMO, you’ll need to get a [DIMO Developer License](https://docs.dimo.zone/developer-platform/getting-started/developer-license) via the [DIMO Dev Console](https://console.dimo.xyz/sign-up). The DIMO Developer license is our approach and design to a more secured, decentralized access control. As a developer, you will need to perform the following steps:
+
+1. Sign Up for an Account - You can use your Google, Github, or supported Web3 wallet to register.
+2. Complete Registration - Enter the details of the application that you’re building.
+3. Connect Your Wallet - In the console dashboard, connect your Web3 wallet. This will be the wallet that will pay & act as the holder of the developer license. NOTE: You must have some DIMO tokens, as well as some MATIC (for gas), to pay for the developer license.
+4. Create An App - Click “Create App”, fill out the form & select your preferred environment (at this time, please select “Production” until we’re ready to launch our Sandbox environment), then hit “Create Application”. Finally, set a spending limit for your connected wallet.
+5. Finish Configuring Your Application - Once your project is initialized, you’ll use your connected wallet to generate an API Key and any optional Redirect URIs.
+
+If you prefer a video overview on getting setup within the DIMO Dev Console, check out our [DIMO Developer Workshop](https://youtu.be/VefEIQUlOUI?si=Am5h_cekMVJcXELM&t=373).
+
 ## How to Use the SDK
 
 Importing the SDK:
@@ -35,15 +48,6 @@ or
 ```python
 dimo = DIMO("Dev")
 ```
-
-### Developer License
-
-As part of the authentication process, you will need to register a set of `client_id` and `redirect_uri` (aka `domain`) on the DIMO Network. The [DIMO Developer License](https://docs.dimo.zone/developer-platform/getting-started/developer-license) is our approach and design to a more secured, decentralized access control. As a developer, you will need to perform the following steps:
-
-1. [Approving the Dev License to use of $DIMO](https://docs.dimo.zone/developer-platform/getting-started/developer-license/licensing-process#step-1-approving-the-dev-license-to-use-of-usddimo)
-2. [Issue the Dev License](https://docs.dimo.zone/developer-platform/getting-started/developer-license/licensing-process#step-2-issue-the-dev-license) (Get a `client_id` assigned to you)
-3. [Configuring the Dev License](https://docs.dimo.zone/developer-platform/getting-started/developer-license/licensing-process#step-3-configuring-the-dev-license) (Set `redirect_uri` aka `domain`)
-4. [Enable Signer(s)](https://docs.dimo.zone/developer-platform/getting-started/developer-license/licensing-process#step-4-enable-signer-s), the `private_key` of this signer will be required for API access
 
 ### DIMO Streams
 
@@ -69,22 +73,22 @@ NOTE: The signer wallet here is recommended to be different from the spender or 
 The SDK offers 3 basic functions that maps to the steps listed in [Wallet-based Authentication Flow](https://docs.dimo.zone/developer-platform/getting-started/authentication/wallet-based-authentication-flow): `generate_challenge`, `sign_challenge`, and `submit_challenge`. You can use them accordingly depending on how you build your application.
 
 ```python
-    challenge = await dimo.auth.generate_challenge(
-        client_id: '<client_id>',
-        domain: '<domain>',
-        address: '<address>'
+    challenge = dimo.auth.generate_challenge(
+        client_id = '<client_id>',
+        domain = '<domain>',
+        address = '<address>'
     )
 
-    signature = await dimo.auth.sign_challenge(
-        message: challenge['challenge'],
-        private_key: '<private_key>'
+    signature = dimo.auth.sign_challenge(
+        message = challenge['challenge'],
+        private_key = '<private_key>'
     )
 
-    tokens = await dimo.auth.submit_challenge(
-        client_id: '<client_id>',
-        domain: '<domain>',
-        state: challenge['state'],
-        signature: signature
+    tokens = dimo.auth.submit_challenge(
+        client_id = '<client_id>',
+        domain = '<domain>',
+        state = challenge['state'],
+        signature = signature
     )
 ```
 
@@ -93,31 +97,24 @@ The SDK offers 3 basic functions that maps to the steps listed in [Wallet-based 
 As mentioned earlier, this is the streamlined function call to directly get the `access_token`. The `address` field in challenge generation is omitted since it is essentially the `client_id` of your application per Developer License:
 
 ```python
-auth_header = await dimo.auth.get_token(
-    client_id: '<client_id>',
-    domain: '<domain>',
-    private_key: '<private_key>'
+auth_header = dimo.auth.get_token(
+    client_id = '<client_id>',
+    domain = '<domain>',
+    private_key = '<private_key>'
 )
 
 # Store the access_token from the auth_header dictionary
 access_token = auth_header["access_token"]
 ```
 
-##### (Option 3) Credentials.json File
-
-Coming Soon
-
 ### Querying the DIMO REST API
 
-The SDK supports async/await syntax using the [asyncio](https://docs.python.org/3/library/asyncio.html) library, and for making HTTP requests using the [requests](https://requests.readthedocs.io/en/latest/) library.
+The SDK uses the [requests](https://requests.readthedocs.io/en/latest/) library for making HTTP requests. You can perform a query like so:
 
 ```python
-async def main():
-    device_makes = await dimo.device_definitions.list_device_makes()
+def get_device_makes():
+    device_makes = dimo.device_definitions.list_device_makes()
     # Do something with the response
-
-if __name__ == "__main__":
-        asyncio.run(main())
 ```
 
 #### Query Parameters
@@ -125,7 +122,7 @@ if __name__ == "__main__":
 For query parameters, simply feed in an input that matches with the expected query parameters:
 
 ```python
-await dimo.device_definitions.get_by_mmy(
+dimo.device_definitions.get_by_mmy(
     make="<vehicle_make>",
     model="<vehicle_model>",
     year=2024
@@ -137,7 +134,7 @@ await dimo.device_definitions.get_by_mmy(
 Path parameters work similarly - simply feed in an input, such as id.
 
 ```python
-await dimo.device_definitions.get_by_id(id='26G4j1YDKZhFeCsn12MAlyU3Y2H')
+dimo.device_definitions.get_by_id(id='26G4j1YDKZhFeCsn12MAlyU3Y2H')
 ```
 
 #### Body Parameters
@@ -151,9 +148,9 @@ For the end users of your application, they will need to share their vehicle per
 Typically, any endpoints that uses a NFT `tokenId` in path parameters will require privilege tokens. You can get the privilege token and pipe it through to corresponding endpoints like this:
 
 ```python
-privilege_token = await dimo.token_exchange.exchange(access_token, privileges=[1,3,4], token_id=<vehicle_token_id>)
+privilege_token = dimo.token_exchange.exchange(token=access_token, privileges=[1,3,4], token_id=<vehicle_token_id>)
 
-await dimo.device_data.get_vehicle_status(token=privilege_token, vehicle_id=<vehicle_token_id>)
+dimo.device_data.get_vehicle_status(token=privilege_token, vehicle_id=<vehicle_token_id>)
 ```
 
 ### Querying the DIMO GraphQL API
@@ -165,9 +162,9 @@ The SDK accepts any type of valid custom GraphQL queries, but we've also include
 The GraphQL entry points are designed almost identical to the REST API entry points. For any GraphQL API that requires auth headers (Telemetry API for example), you can use the same pattern as you would in the REST protected endpoints.
 
 ```python
-privilege_token = await dimo.token_exchange.exchange(access_token, privileges=[1,3,4], token_id=<vehicle_token_id>)
+privilege_token = dimo.token_exchange.exchange(access_token, privileges=[1,3,4], token_id=<vehicle_token_id>)
 
-telemetry = await dimo.telemetry.query(
+telemetry = dimo.telemetry.query(
     token=privilege_token,
     query= """
         query {
@@ -190,7 +187,7 @@ my_query = """
     }
     """
 
-total_network_vehicles = await dimo.identity.query(query=my_query)
+total_network_vehicles = dimo.identity.query(query=my_query)
 ```
 
 #### Built in graphQL Queries: Identity API (Common Queries)
@@ -202,7 +199,7 @@ Returns the first 10 vehicles
 _Example:_
 
 ```python
-first_10_vehicles = await dimo.identity.count_dimo_vehicles()
+first_10_vehicles = dimo.identity.count_dimo_vehicles()
 ```
 
 ##### .list_vehicle_definitions_per_address()
@@ -212,7 +209,7 @@ Requires an **address** and a **limit**. Returns vehicle definitions (limited by
 _Example:_
 
 ```python
-my_vehicle_definitions = await dimo.identity.list_vehicle_definitions_per_address(
+my_vehicle_definitions = dimo.identity.list_vehicle_definitions_per_address(
     address = "<0x address>",
     limit = 10
 )
@@ -225,7 +222,7 @@ Requires an **address** and a **limit**. Returns the makes, models, and years(li
 _Example:_
 
 ```python
-my_mmy = await dimo.identity.mmy_by_owner(
+my_mmy = dimo.identity.mmy_by_owner(
     address = "<0x address>",
     limit = 10
 )
@@ -238,7 +235,7 @@ Requires an **address** a **vehicle_limit**, and a **privileges_limit**. Returns
 _Example:_
 
 ```python
-my_vehicle_id_and_privileges = await dimo.identity.list_vehicle_definitions_per_address(
+my_vehicle_id_and_privileges = dimo.identity.list_vehicle_definitions_per_address(
     address = "<0x address>",
     vehicle_limit = 4,
     privileges_limit = 4,
@@ -252,7 +249,7 @@ Requires a **dev_address**, **owner_address**, and **limit**. Returns the Token 
 _Example:_
 
 ```python
-my_vehicle_definitions = await dimo.identity.list_token_ids_granted_to_dev_by_owner(
+my_vehicle_definitions = dimo.identity.list_token_ids_granted_to_dev_by_owner(
     dev_address = "<0x dev address>",
     owner_address = "0x owner address>",
     limit = 10
@@ -266,7 +263,7 @@ Requires an **address** and **limit**. Returns a list of DCNs attached to the ve
 _Example:_
 
 ```python
-my_vehicle_definitions = await dimo.identity.dcn_by_owner(
+my_vehicle_definitions = dimo.identity.dcn_by_owner(
     address = "<0x address>",
     limit = 10
 )
@@ -279,7 +276,7 @@ Requires a **token_id**. Returns the make, model, year and Token IDs for a given
 _Example:_
 
 ```python
-my_mmy_token_id = await dimo.identity.mmy_by_token_id(token_id=21957)
+my_mmy_token_id = dimo.identity.mmy_by_token_id(token_id=21957)
 ```
 
 ##### .rewards_by_owner
@@ -289,7 +286,7 @@ Requires an **address**. Returns the rewards data for a given owner.
 _Example:_
 
 ```python
-my_rewards = await dimo.identity.rewards_by_owner(address="<0x address>")
+my_rewards = dimo.identity.rewards_by_owner(address="<0x address>")
 ```
 
 ##### .rewards_history_by_owner
@@ -299,7 +296,7 @@ Requires an **address** and **limit**. Returns the rewards history data for a gi
 _Example:_
 
 ```python
-my_rewards_history = await dimo.identity.rewards_history_by_owner(address="<0x address>", limit=50)
+my_rewards_history = dimo.identity.rewards_history_by_owner(address="<0x address>", limit=50)
 ```
 
 #### Built in graphQL Queries: Telemetry API (Common Queries)
@@ -313,7 +310,7 @@ Requires a **privilege_token** and **token_id**. Returns latest vehicle signals 
 _Example:_
 
 ```python
-my_latest_signals = await dimo.telemetry.get_signals_latest(
+my_latest_signals = dimo.telemetry.get_signals_latest(
     token=my_privileged_token, token_id=12345)
 ```
 
@@ -324,7 +321,7 @@ Requires a **privilege_token**, **token_id**, **start_date**, and **end_date**. 
 _Example:_
 
 ```python
-my_daily_signals = await dimo.telemetry.get_daily_signals_autopi(
+my_daily_signals = dimo.telemetry.get_daily_signals_autopi(
     token=my_privileged_token,
     token_id=12345,
     start_date="2024-07-04T18:00:00Z",
@@ -338,7 +335,7 @@ Requires a **privilege_token**, **token_id**, **start_date**, and **end_date**. 
 _Example:_
 
 ```python
-my_daily_avg_speed = await dimo.telemetry.get_daily_avg_speed(
+my_daily_avg_speed = dimo.telemetry.get_daily_avg_speed(
     token=my_privileged_token,
     token_id=12345,
     start_date="2024-07-04T18:00:00Z",
@@ -352,7 +349,7 @@ Requires a **privilege_token**, **token_id**, **start_date**, and **end_date**. 
 _Example:_
 
 ```python
-my_daily_max_speed = await dimo.telemetry.get_daily_max_speed(
+my_daily_max_speed = dimo.telemetry.get_daily_max_speed(
     token=my_privileged_token,
     token_id=12345,
     start_date="2024-07-04T18:00:00Z",
@@ -362,7 +359,3 @@ my_daily_max_speed = await dimo.telemetry.get_daily_max_speed(
 ## How to Contribute to the SDK
 
 You can read more about contributing [here](https://github.com/DIMO-Network/dimo-python-sdk/blob/dev-barrettk/CONTRIBUTING.md)
-
-```
-
-```
