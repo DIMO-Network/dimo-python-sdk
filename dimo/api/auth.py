@@ -1,6 +1,4 @@
-from web3 import Web3
-from eth_account.messages import encode_defunct
-from dimo.constants import dimo_constants
+from dimo.eth_signer import EthSigner
 from dimo.errors import check_type, check_optional_type
 from urllib.parse import urlencode
 from typing import Dict, Optional
@@ -49,11 +47,7 @@ class Auth:
         check_type("message", message, str)
         check_type("private_key", private_key, str)
 
-        web3 = Web3(Web3.HTTPProvider(dimo_constants[self.env]["RPC_provider"]))
-        signed_message = web3.eth.account.sign_message(
-            encode_defunct(text=message), private_key=private_key
-        )
-        return signed_message.signature.hex()
+        return EthSigner.sign_message(message, private_key)
 
     def submit_challenge(
         self,
