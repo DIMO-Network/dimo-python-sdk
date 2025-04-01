@@ -4,6 +4,7 @@ from .api.device_definitions import DeviceDefinitions
 from .api.token_exchange import TokenExchange
 from .api.trips import Trips
 from .api.valuations import Valuations
+from .api.vehicle_events import VehicleEvents
 
 from .graphql.identity import Identity
 from .graphql.telemetry import Telemetry
@@ -31,6 +32,7 @@ class DIMO:
         self.trips = Trips(self.request, self._get_auth_headers)
         self.valuations = Valuations(self.request, self._get_auth_headers)
         self.telemetry = Telemetry(self)
+        self.vehicle_events = VehicleEvents(self.request, self._get_auth_headers)
         self._session = Request.session
 
     # Creates a full path for endpoints combining DIMO service, specific endpoint, and optional params
