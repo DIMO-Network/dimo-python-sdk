@@ -43,7 +43,7 @@ class VehicleEvents:
             "VehicleEvents",
             url,
             headers=self._get_auth_headers(developer_jwt),
-            json=request,
+            data=request,
         )
 
     def delete_webhook(self, developer_jwt: str, id: str):
