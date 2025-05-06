@@ -1,6 +1,7 @@
 from dimo.constants import dimo_constants
 from dimo.errors import check_type, check_optional_type
 from dimo.permission_decoder import PermissionDecoder
+import json
 
 
 class TokenExchange:
@@ -17,6 +18,8 @@ class TokenExchange:
     def _decode_vehicle_permissions(self, token_id: int, client_id: str) -> dict:
         response = self._identity.check_vehicle_privileges(token_id)
         try:
+            # If response is bytes
+            response = json.loads(response.decode('utf-8'))
             nodes = (
                 response.get("data", {})
                 .get("vehicle", {})
