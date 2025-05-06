@@ -18,8 +18,6 @@ class TokenExchange:
     def _decode_vehicle_permissions(self, token_id: int, client_id: str) -> dict:
         response = self._identity.check_vehicle_privileges(token_id)
         try:
-            # If response is bytes
-            response = json.loads(response.decode('utf-8'))
             nodes = (
                 response.get("data", {})
                 .get("vehicle", {})
