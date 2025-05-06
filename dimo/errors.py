@@ -30,3 +30,12 @@ def check_optional_type(param_name: str, value: Any, expected_type: Union[Type, 
 
 class DimoValueError(DimoError):
     pass
+
+
+class HTTPError(Exception):
+    """Http error wrapper with status code and (optional) response body"""
+
+    def __init__(self, status: int, message: str, body: Any = None):
+        super().__init__(f"HTTP {status}: {message}")
+        self.status = status
+        self.body = body
