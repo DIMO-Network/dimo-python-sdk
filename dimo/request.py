@@ -51,7 +51,7 @@ class Request:
             raise HTTPError(status=status or -1, message=str(exc), body=body)
 
         content_type = response.headers.get("Content-Type", "")
-        if "application/json" in content_type:
+        if "json" in content_type:
             return response.json()
 
         return response.content
