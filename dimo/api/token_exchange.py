@@ -1,6 +1,7 @@
 from dimo.constants import dimo_constants
 from dimo.errors import check_type, check_optional_type
 from dimo.permission_decoder import PermissionDecoder
+import json
 
 
 class TokenExchange:
