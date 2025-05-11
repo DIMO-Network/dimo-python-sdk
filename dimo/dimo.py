@@ -81,6 +81,7 @@ class DIMO:
             "valuations": (Valuations, ("request", "_get_auth_headers")),
             "identity": (Identity, ("self",)),
             "telemetry": (Telemetry, ("self",)),
+            "vehicle_events": (VehicleEvents, ("request", "_get_auth_headers")),
         }
         if name in mapping:
             cls, deps = mapping[name]

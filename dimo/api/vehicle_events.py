@@ -8,6 +8,9 @@ class VehicleEvents:
         self._get_auth_headers = get_auth_headers
 
     def list_all_webhooks(self, developer_jwt: str):
+        """
+        Lists all webhooks for a given developer license
+        """
         check_type("developer_jwt", developer_jwt, str)
         url = f"/v1/webhooks"
         return self._request(
@@ -15,9 +18,12 @@ class VehicleEvents:
         )
 
     def register_webhook(self, developer_jwt: str, request: object):
+        """
+        Creates a new webhook under the developer license
+        """
         check_type("developer_jwt", developer_jwt, str)
         check_type("request", request, object)
-        url = f"/webhooks"
+        url = f"/v1/webhooks"
         return self._request(
             "POST",
             "VehicleEvents",
@@ -27,17 +33,45 @@ class VehicleEvents:
         )
 
     def webhook_signals(self, developer_jwt: str):
+        """
+        Fetches the list of signal names available for the data field
+        """
         check_type("developer_jwt", developer_jwt, str)
-        url = f"/webhooks/signals"
+        url = f"/v1/webhooks/signals"
+        return self._request(
+            "GET", "VehicleEvents", url, headers=self._get_auth_headers(developer_jwt)
+        )
+    
+    def list_vehicle_subscriptions(self, developer_jwt: str, token_id: str):
+        """
+        Lists all webhooks that a specified vehicle token id is subscribed to
+        """
+        check_type("developer_jwt", developer_jwt, str)
+        check_type("token_id", token_id, str)
+        url = f"/v1/webhooks/vehicles/{token_id}"
+        return self._request(
+            "GET", "VehicleEvents", url, headers=self._get_auth_headers(developer_jwt)
+        )
+    
+    def list_vehicle_subscriptions_by_event(self, developer_jwt: str,  webhook_id: str):
+        """
+        Lists all vehicle subscriptions for a given webhook id
+        """
+        check_type("developer_jwt", developer_jwt, str)
+        check_type("webhook_id", webhook_id, str)
+        url = f"/v1/webhooks/{webhook_id}"
         return self._request(
             "GET", "VehicleEvents", url, headers=self._get_auth_headers(developer_jwt)
         )
 
-    def update_webhook(self, developer_jwt: str, id: str, request: object):
+    def update_webhook(self, developer_jwt: str, webhook_id: str, request: object):
+        """
+        Updates a webhook by a provided webhook id
+        """
         check_type("developer_jwt", developer_jwt, str)
-        check_type("id", id, str)
+        check_type("webhook_id", webhook_id, str)
         check_type("request", request, object)
-        url = f"/webhooks/{id}"
+        url = f"/v1/webhooks/{webhook_id}"
         return self._request(
             "PUT",
             "VehicleEvents",
@@ -46,10 +80,13 @@ class VehicleEvents:
             data=request,
         )
 
-    def delete_webhook(self, developer_jwt: str, id: str):
+    def delete_webhook(self, developer_jwt: str, webhook_id: str):
+        """
+        Deletes a webhook by a provided webhook id
+        """
         check_type("developer_jwt", developer_jwt, str)
-        check_type("id", id, str)
-        url = f"/webhooks/{id}"
+        check_type("webhook_id", webhook_id, str)
+        url = f"/v1/webhooks/{webhook_id}"
         return self._request(
             "DELETE",
             "VehicleEvents",
@@ -57,29 +94,48 @@ class VehicleEvents:
             headers=self._get_auth_headers(developer_jwt),
         )
 
-    def vehicle_subscriptions(self, developer_jwt: str, token_id: str):
+    def subscribe_all_vehicles(self, developer_jwt: str, webhook_id: str):
+        """
+        Subscribes all vehicles to a specified webhook
+        """
+        check_type("developer_jwt", developer_jwt, str)
+        check_type("webhook_id", webhook_id, str)
+        url = f"/v1/webhooks/{webhook_id}/subscribe/all"
+        return self._request(
+            "POST", "VehicleEvents", url, headers=self._get_auth_headers(developer_jwt)
+        )
+    
+    def subscribe_vehicle(self, developer_jwt: str, token_id: str, webhook_id: str):
+        """
+        Subscribes a single vehicle to a specified webhook
+        """
         check_type("developer_jwt", developer_jwt, str)
         check_type("token_id", token_id, str)
-        url = f"/subscriptions/{token_id}"
+        check_type("webhook_id", webhook_id, str)
+        url = f"/v1/webhooks/{webhook_id}/subscribe/{token_id}"
         return self._request(
-            "GET", "VehicleEvents", url, headers=self._get_auth_headers(developer_jwt)
+            "POST", "VehicleEvents", url, headers=self._get_auth_headers(developer_jwt)
+        )
+    
+    def unsubscribe_all_vehicles(self, developer_jwt: str, webhook_id: str):
+        """
+        Unsubscribes all vehicles from a specified webhook
+        """
+        check_type("developer_jwt", developer_jwt, str)
+        check_type("webhook_id", webhook_id, str)
+        url = f"/v1/webhooks/{webhook_id}/unsubscribe/all"
+        return self._request(
+            "DELETE", "VehicleEvents", url, headers=self._get_auth_headers(developer_jwt)
         )
 
-    def subscribe_vehicle(self, developer_jwt: str, token_id: str, event_id: str, request={}):
+    def unsubscribe_vehicle(self, developer_jwt: str, token_id: str, webhook_id: str):
+        """
+        Unsubscribes a single vehicle from a specified webhook
+        """
         check_type("developer_jwt", developer_jwt, str)
         check_type("token_id", token_id, str)
-        check_type("event_id", event_id, str)
-        check_type("request", request, object)
-        url = f"/subscriptions/{token_id}/event/{event_id}"
-        return self._request(
-            "POST", "VehicleEvents", url, headers=self._get_auth_headers(developer_jwt), json=request
-        )
-
-    def unsubscribe_vehicle(self, developer_jwt: str, token_id: str, event_id: str):
-        check_type("developer_jwt", developer_jwt, str)
-        check_type("token_id", token_id, str)
-        check_type("event_id", event_id, str)
-        url = f"/subscriptions/{token_id}/event/{event_id}"
+        check_type("webhook_id", webhook_id, str)
+        url = f"/v1/webhooks/{webhook_id}/unsubscribe/{token_id}"
         return self._request(
             "DELETE",
             "VehicleEvents",
