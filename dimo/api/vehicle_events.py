@@ -7,9 +7,9 @@ class VehicleEvents:
         self._request = request_method
         self._get_auth_headers = get_auth_headers
 
-    def list_webhooks(self, developer_jwt: str):
+    def list_all_webhooks(self, developer_jwt: str):
         check_type("developer_jwt", developer_jwt, str)
-        url = f"/webhooks"
+        url = f"/v1/webhooks"
         return self._request(
             "GET", "VehicleEvents", url, headers=self._get_auth_headers(developer_jwt)
         )
