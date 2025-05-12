@@ -1,4 +1,3 @@
-from typing_extensions import Optional
 from requests import Session
 
 from .api.attestation import Attestation
@@ -22,7 +21,9 @@ from urllib.parse import urljoin
 
 class DIMO:
 
-    def __init__(self, env: str = "Production", session: Optional[Session] = None) -> None:
+    def __init__(
+        self, env: str = "Production", session: Optional[Session] = None
+    ) -> None:
 
         self.env = env
         # Assert valid environment specified
@@ -33,7 +34,9 @@ class DIMO:
 
         self._client_id: Optional[str] = None
         self._services: Dict[str, Any] = {}
-        self.session = session or Session()  # Use the provided session or create a new one
+        self.session = (
+            session or Session()
+        )  # Use the provided session or create a new one
 
     # Creates a full path for endpoints combining DIMO service, specific endpoint, and optional params
     def _get_full_path(self, service: str, path: str, params=None) -> str:
