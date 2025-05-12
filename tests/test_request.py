@@ -3,7 +3,8 @@ import pytest
 from requests import RequestException
 from unittest.mock import Mock
 
-from dimo.request import Request, HTTPError
+from dimo.errors import HTTPError
+from dimo.request import Request
 
 
 class DummyResponse:
