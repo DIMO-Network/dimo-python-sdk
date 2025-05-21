@@ -9,6 +9,7 @@ dimo_environment = {
         "Trips": "https://trips-api.dimo.zone",
         "User": "https://users-api.dimo.zone",
         "Valuations": "https://valuations-api.dimo.zone",
+        "VehicleEvents": "https://vehicle-events-api.dimo.zone",
     },
     "Dev": {
         "Attestation": "https://attestation-api.dev.dimo.zone",
@@ -20,5 +21,6 @@ dimo_environment = {
         "Trips": "https://trips-api.dev.dimo.zone",
         "User": "https://users-api.dev.dimo.zone",
         "Valuations": "https://valuations-api.dev.dimo.zone",
+        "VehicleEvents": "https://vehicle-events-api.dev.dimo.zone",
     },
 }

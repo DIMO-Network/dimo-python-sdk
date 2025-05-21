@@ -209,6 +209,28 @@ my_query = """
 total_network_vehicles = dimo.identity.query(query=my_query)
 ```
 
+### Vehicle Events API (DIMO Webhooks)
+
+The SDK supports calls to the Vehicle Events API, including: registering a new webhook, subscribing and unsubscribing vehicles, checking vehicles subscribed to a specific webhook, and more. To view all the available methods, check out the [Vehicle Events API Documentation here](https://docs.dimo.org/developer-platform/vehicle-events-api-webhooks).
+
+Here's a sample of how you might register a new webhook:
+
+```python
+
+new_webhook_config = {
+    "service": "Telemetry",
+    "data": "powertrainTransmissionTravelledDistance",
+    "trigger": "valueNumber > 10000",
+    "setup": "Realtime",
+    "description": "Trigger when odometer above 10000 km",
+    "target_uri": "https://my-target-uri.com/webhook",
+    "status": "Active",
+    "verification_token": "abc"
+}
+
+dimo.vehicle_events.register_webhook(developer_jwt=dev_jwt, request=new_webhook_config)
+```
+
 ## How to Contribute to the SDK
 
 You can read more about contributing [here](https://github.com/DIMO-Network/dimo-python-sdk/blob/dev-barrettk/CONTRIBUTING.md)
