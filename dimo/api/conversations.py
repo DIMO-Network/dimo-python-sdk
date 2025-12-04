@@ -47,7 +47,8 @@ class Conversations:
         user: str,
         admin: bool = False,
         vehicle_ids: Optional[List[int]] = None,
-        enable_websearch: bool = False,
+        # TODO: enable web search later
+        # enable_websearch: bool = False,
     ) -> Dict:
         """
         Create a new conversational agent for a user with optional vehicle access.
