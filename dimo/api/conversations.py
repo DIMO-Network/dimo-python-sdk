@@ -45,7 +45,6 @@ class Conversations:
         self,
         developer_jwt: str,
         user: str,
-        admin: bool = False,
         vehicle_ids: Optional[List[int]] = None,
         # TODO: enable web search later
         # enable_websearch: bool = False,
@@ -86,15 +85,13 @@ class Conversations:
         """
         check_type("developer_jwt", developer_jwt, str)
         check_type("user", user, str)
-        check_type("admin", admin, bool)
         check_optional_type("vehicle_ids", vehicle_ids, list)
-        check_type("enable_websearch", enable_websearch, bool)
+        # check_type("enable_websearch", enable_websearch, bool)
 
         body = {
             "user": user,
-            "admin": admin,
             "vehicleIds": vehicle_ids,
-            "enableWebsearch": enable_websearch,
+            # "enableWebsearch": enable_websearch,
         }
 
         response = self._request(
