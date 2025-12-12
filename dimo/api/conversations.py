@@ -9,7 +9,7 @@ class Conversations:
     Client for the DIMO Conversations API.
 
     This API enables developers to create conversational AI agents that can query
-    vehicle identity data, telemetry data, and perform web searches on behalf of users.
+    vehicle data, telemetry data, and perform web searches on behalf of users.
 
     Key Features:
     - Create AI agents with access to specific vehicles
@@ -46,8 +46,6 @@ class Conversations:
         developer_jwt: str,
         user: str,
         vehicle_ids: Optional[List[int]] = None,
-        # TODO: enable web search later
-        # enable_websearch: bool = False,
     ) -> Dict:
         """
         Create a new conversational agent for a user with optional vehicle access.
@@ -55,12 +53,10 @@ class Conversations:
         Args:
             developer_jwt (str): Developer JWT token for authentication
             user (str): Wallet address (0x...) or email identifying the user
-            admin (bool): Admin flag - if True, unrestricted access to all vehicles (default: False)
             vehicle_ids (list[int], optional): List of vehicle token IDs this agent can access.
                 - None (default): Unrestricted access, ownership validated at runtime
                 - []: Empty list means no vehicle access (identity queries only)
                 - [872, 1234]: Explicit list of allowed vehicles
-            enable_websearch (bool): Enable web search subagent for location-based services (default: False)
 
         Returns:
             dict: Agent information including agentId, mode, user, vehicleIds, and createdAt
@@ -79,7 +75,6 @@ class Conversations:
             ...     developer_jwt=dev_jwt,
             ...     user="0x1234567890abcdef1234567890abcdef12345678",
             ...     vehicle_ids=[872, 1234],
-            ...     enable_websearch=True
             ... )
             >>> print(agent['agentId'])
         """
