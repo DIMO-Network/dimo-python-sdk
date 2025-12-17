@@ -57,9 +57,9 @@ class Conversations:
             developer_jwt (str): Developer JWT token for authentication
             api_key (str): DIMO API key for the agent to access vehicle data
             user_wallet (str): User's wallet address (e.g., "0x2345...")
+            agent_type (str): The type of agent to create (e.g., "driver_agent_v1")
             vehicle_ids (str, optional): JSON array string of vehicle token IDs (e.g., "[1, 2, 3]").
                 If not provided, agent will have access to all vehicles owned by the user.
-            agent_type (str, optional): The type of agent to create. Defaults to "driver_agent_v1"
             personality (str, optional): Personality preset for the agent. Defaults to "uncle_mechanic"
 
         Returns:
@@ -79,6 +79,7 @@ class Conversations:
             ...     developer_jwt=dev_jwt,
             ...     api_key="0x1234567890abcdef...",
             ...     user_wallet="0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
+            ...     agent_type="driver_agent_v1",
             ...     vehicle_ids="[1, 2, 3]",
             ... )
             >>> print(agent['agentId'])

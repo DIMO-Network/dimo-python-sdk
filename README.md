@@ -10,7 +10,29 @@ pip install dimo-python-sdk
 
 ## Unit Testing
 
-Coming Soon
+The SDK includes comprehensive unit tests to ensure reliability and correctness. To run the tests:
+
+1. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Run all tests:**
+   ```bash
+   pytest
+   ```
+
+3. **Run tests with verbose output:**
+   ```bash
+   pytest -v
+   ```
+
+4. **Run specific test files:**
+   ```bash
+   pytest tests/test_conversations.py -v
+   ```
+
+The test suite uses `pytest` and includes tests for all major SDK functionality including authentication, API endpoints, GraphQL queries, and error handling
 
 ## API Documentation
 

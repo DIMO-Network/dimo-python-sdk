@@ -66,7 +66,8 @@ class TestConversationsCreateAgent:
         result = client.conversations.create_agent(
             developer_jwt=dev_jwt,
             api_key=api_key,
-            user_wallet=user_wallet
+            user_wallet=user_wallet,
+            agent_type="driver_agent_v1"
         )
         
         # Verify the request was called correctly
@@ -106,6 +107,7 @@ class TestConversationsCreateAgent:
             developer_jwt=dev_jwt,
             api_key=api_key,
             user_wallet=user_wallet,
+            agent_type="driver_agent_v1",
             vehicle_ids=vehicle_ids
         )
         
@@ -134,6 +136,7 @@ class TestConversationsCreateAgent:
             developer_jwt="test_jwt",
             api_key="0xapikey",
             user_wallet="0xwallet",
+            agent_type="driver_agent_v1",
             personality="helpful_assistant"
         )
         
@@ -182,7 +185,8 @@ class TestConversationsCreateAgent:
             client.conversations.create_agent(
                 developer_jwt=123,  # Should be string
                 api_key="0xapikey",
-                user_wallet="0xwallet"
+                user_wallet="0xwallet",
+                agent_type="driver_agent_v1"
             )
         
         # Test invalid api_key type
@@ -190,7 +194,8 @@ class TestConversationsCreateAgent:
             client.conversations.create_agent(
                 developer_jwt="test_jwt",
                 api_key=123,  # Should be string
-                user_wallet="0xwallet"
+                user_wallet="0xwallet",
+                agent_type="driver_agent_v1"
             )
         
         # Test invalid user_wallet type
@@ -198,7 +203,17 @@ class TestConversationsCreateAgent:
             client.conversations.create_agent(
                 developer_jwt="test_jwt",
                 api_key="0xapikey",
-                user_wallet=123  # Should be string
+                user_wallet=123,  # Should be string
+                agent_type="driver_agent_v1"
+            )
+        
+        # Test invalid agent_type type
+        with pytest.raises(DimoTypeError):
+            client.conversations.create_agent(
+                developer_jwt="test_jwt",
+                api_key="0xapikey",
+                user_wallet="0xwallet",
+                agent_type=123  # Should be string
             )
         
         # Test invalid vehicle_ids type
@@ -207,6 +222,7 @@ class TestConversationsCreateAgent:
                 developer_jwt="test_jwt",
                 api_key="0xapikey",
                 user_wallet="0xwallet",
+                agent_type="driver_agent_v1",
                 vehicle_ids=123  # Should be string or None
             )
         
@@ -216,6 +232,7 @@ class TestConversationsCreateAgent:
                 developer_jwt="test_jwt",
                 api_key="0xapikey",
                 user_wallet="0xwallet",
+                agent_type="driver_agent_v1",
                 personality=123  # Should be string
             )
 
@@ -651,6 +668,7 @@ class TestConversationsIntegration:
             developer_jwt="test_jwt",
             api_key="0x1234567890abcdef",
             user_wallet="0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
+            agent_type="driver_agent_v1",
             vehicle_ids="[872]"
         )
         assert agent["agentId"] == "agent-test123"
