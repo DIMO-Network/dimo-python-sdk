@@ -44,25 +44,32 @@ class Conversations:
     def create_agent(
         self,
         developer_jwt: str,
-        user: str,
-        vehicle_ids: Optional[List[int]] = None,
+        agent_type: str,
+        variables: Dict[str, str],
+        secrets: Optional[Dict[str, str]] = None,
+        personality: Optional[str] = None,
     ) -> Dict:
         """
-        Create a new conversational agent for a user with optional vehicle access.
+        Create a new conversational agent with the specified configuration.
 
         Args:
             developer_jwt (str): Developer JWT token for authentication
-            user (str): Wallet address (0x...) or email identifying the user
-            vehicle_ids (list[int], optional): List of vehicle token IDs this agent can access.
-                - None (default): Unrestricted access, ownership validated at runtime
-                - []: Empty list means no vehicle access (identity queries only)
-                - [872, 1234]: Explicit list of allowed vehicles
+            agent_type (str): The type of agent to create (e.g., "driver_agent_v1")
+            variables (dict[str, str]): Configuration variables for the agent.
+                Common variables include:
+                - "USER_WALLET": User's wallet address (e.g., "0x86b04f6d...")
+                - "VEHICLE_IDS": JSON array of vehicle token IDs (e.g., "[1, 2, 3]")
+            secrets (dict[str, str], optional): Sensitive data for the agent.
+                Common secrets include:
+                - "VEHICLE_JWT": JWT token for vehicle access
+            personality (str, optional): Personality preset for the agent
+                (e.g., "uncle_mechanic")
 
         Returns:
-            dict: Agent information including agentId, mode, user, vehicleIds, and createdAt
+            dict: Agent information including agentId and configuration details
 
         Behavior:
-            - One agent per user (idempotent creation)
+            - Creates a new agent with the specified type and configuration
             - Validates configuration and mode detection
             - Creates/reuses shared identity subagent
             - Creates per-vehicle telemetry subagents with token exchange
@@ -73,21 +80,30 @@ class Conversations:
             >>> dev_jwt = "your_developer_jwt"
             >>> agent = dimo.conversations.create_agent(
             ...     developer_jwt=dev_jwt,
-            ...     user="0x1234567890abcdef1234567890abcdef12345678",
-            ...     vehicle_ids=[872, 1234],
+            ...     agent_type="driver_agent_v1",
+            ...     variables={
+            ...         "USER_WALLET": "0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
+            ...         "VEHICLE_IDS": "[1, 2, 3]"
+            ...     },
+            ...     secrets={"VEHICLE_JWT": "eyJ..."},
+            ...     personality="uncle_mechanic",
             ... )
             >>> print(agent['agentId'])
         """
         check_type("developer_jwt", developer_jwt, str)
-        check_type("user", user, str)
-        check_optional_type("vehicle_ids", vehicle_ids, list)
-        # check_type("enable_websearch", enable_websearch, bool)
+        check_type("agent_type", agent_type, str)
+        check_type("variables", variables, dict)
+        check_optional_type("secrets", secrets, dict)
+        check_optional_type("personality", personality, str)
 
         body = {
-            "user": user,
-            "vehicleIds": vehicle_ids,
-            # "enableWebsearch": enable_websearch,
+            "type": agent_type,
+            "variables": variables,
         }
+        if secrets is not None:
+            body["secrets"] = secrets
+        if personality is not None:
+            body["personality"] = personality
 
         response = self._request(
             "POST",
