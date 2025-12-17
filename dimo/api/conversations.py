@@ -44,26 +44,23 @@ class Conversations:
     def create_agent(
         self,
         developer_jwt: str,
+        api_key: str,
+        user_wallet: str,
         agent_type: str,
-        variables: Dict[str, str],
-        secrets: Optional[Dict[str, str]] = None,
-        personality: Optional[str] = None,
+        vehicle_ids: Optional[str] = None,
+        personality: str = "uncle_mechanic",
     ) -> Dict:
         """
         Create a new conversational agent with the specified configuration.
 
         Args:
             developer_jwt (str): Developer JWT token for authentication
-            agent_type (str): The type of agent to create (e.g., "driver_agent_v1")
-            variables (dict[str, str]): Configuration variables for the agent.
-                Common variables include:
-                - "USER_WALLET": User's wallet address (e.g., "0x86b04f6d...")
-                - "VEHICLE_IDS": JSON array of vehicle token IDs (e.g., "[1, 2, 3]")
-            secrets (dict[str, str], optional): Sensitive data for the agent.
-                Common secrets include:
-                - "VEHICLE_JWT": JWT token for vehicle access
-            personality (str, optional): Personality preset for the agent
-                (e.g., "uncle_mechanic")
+            api_key (str): DIMO API key for the agent to access vehicle data
+            user_wallet (str): User's wallet address (e.g., "0x2345...")
+            vehicle_ids (str, optional): JSON array string of vehicle token IDs (e.g., "[1, 2, 3]").
+                If not provided, agent will have access to all vehicles owned by the user.
+            agent_type (str, optional): The type of agent to create. Defaults to "driver_agent_v1"
+            personality (str, optional): Personality preset for the agent. Defaults to "uncle_mechanic"
 
         Returns:
             dict: Agent information including agentId and configuration details
@@ -80,30 +77,31 @@ class Conversations:
             >>> dev_jwt = "your_developer_jwt"
             >>> agent = dimo.conversations.create_agent(
             ...     developer_jwt=dev_jwt,
-            ...     agent_type="driver_agent_v1",
-            ...     variables={
-            ...         "USER_WALLET": "0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
-            ...         "VEHICLE_IDS": "[1, 2, 3]"
-            ...     },
-            ...     secrets={"VEHICLE_JWT": "eyJ..."},
-            ...     personality="uncle_mechanic",
+            ...     api_key="0x1234567890abcdef...",
+            ...     user_wallet="0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
+            ...     vehicle_ids="[1, 2, 3]",
             ... )
             >>> print(agent['agentId'])
         """
         check_type("developer_jwt", developer_jwt, str)
+        check_type("api_key", api_key, str)
+        check_type("user_wallet", user_wallet, str)
+        check_optional_type("vehicle_ids", vehicle_ids, str)
         check_type("agent_type", agent_type, str)
-        check_type("variables", variables, dict)
-        check_optional_type("secrets", secrets, dict)
-        check_optional_type("personality", personality, str)
+        check_type("personality", personality, str)
 
+        # Build variables dict
+        variables = {"USER_WALLET": user_wallet}
+        if vehicle_ids is not None:
+            variables["VEHICLE_IDS"] = vehicle_ids
+
+        # Build request body
         body = {
+            "personality": personality,
+            "secrets": {"DIMO_API_KEY": api_key},
             "type": agent_type,
             "variables": variables,
         }
-        if secrets is not None:
-            body["secrets"] = secrets
-        if personality is not None:
-            body["personality"] = personality
 
         response = self._request(
             "POST",

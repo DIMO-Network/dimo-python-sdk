@@ -47,28 +47,26 @@ class TestConversationsCreateAgent:
     """Test the create_agent endpoint."""
 
     def test_create_agent_minimal(self, monkeypatch):
-        """Test creating an agent with minimal required parameters."""
+        """Test creating an agent with minimal required parameters (no vehicle_ids)."""
         client = DIMO(env="Dev")
         
         # Mock the request method
         fake_request = MagicMock(return_value={
             "agentId": "agent-abc123",
             "type": "driver_agent_v1",
+            "personality": "uncle_mechanic",
             "createdAt": "2024-01-01T00:00:00Z"
         })
         monkeypatch.setattr(client, "request", fake_request)
         
         dev_jwt = "test_developer_jwt"
-        agent_type = "driver_agent_v1"
-        variables = {
-            "USER_WALLET": "0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
-            "VEHICLE_IDS": "[1, 2, 3]"
-        }
+        api_key = "0x1234567890abcdef"
+        user_wallet = "0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605"
         
         result = client.conversations.create_agent(
             developer_jwt=dev_jwt,
-            agent_type=agent_type,
-            variables=variables
+            api_key=api_key,
+            user_wallet=user_wallet
         )
         
         # Verify the request was called correctly
@@ -78,17 +76,18 @@ class TestConversationsCreateAgent:
         assert args[0] == "POST"
         assert args[1] == "Conversations"
         assert args[2] == "/agents"
-        assert kwargs["data"]["type"] == agent_type
-        assert kwargs["data"]["variables"] == variables
-        assert "secrets" not in kwargs["data"]
-        assert "personality" not in kwargs["data"]
+        assert kwargs["data"]["type"] == "driver_agent_v1"
+        assert kwargs["data"]["personality"] == "uncle_mechanic"
+        assert kwargs["data"]["secrets"]["DIMO_API_KEY"] == api_key
+        assert kwargs["data"]["variables"]["USER_WALLET"] == user_wallet
+        assert "VEHICLE_IDS" not in kwargs["data"]["variables"]
         
         # Verify the response
         assert result["agentId"] == "agent-abc123"
-        assert result["type"] == agent_type
+        assert result["type"] == "driver_agent_v1"
 
-    def test_create_agent_with_secrets(self, monkeypatch):
-        """Test creating an agent with secrets."""
+    def test_create_agent_with_vehicle_ids(self, monkeypatch):
+        """Test creating an agent with specific vehicle IDs."""
         client = DIMO(env="Dev")
         
         fake_request = MagicMock(return_value={
@@ -99,51 +98,51 @@ class TestConversationsCreateAgent:
         monkeypatch.setattr(client, "request", fake_request)
         
         dev_jwt = "test_developer_jwt"
-        agent_type = "driver_agent_v1"
-        variables = {"USER_WALLET": "0xabcdef", "VEHICLE_IDS": "[872, 1234]"}
-        secrets = {"VEHICLE_JWT": "eyJhbGciOiJIUzI1NiJ9..."}
+        api_key = "0xabcdef123456"
+        user_wallet = "0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605"
+        vehicle_ids = "[872, 1234]"
         
         result = client.conversations.create_agent(
             developer_jwt=dev_jwt,
-            agent_type=agent_type,
-            variables=variables,
-            secrets=secrets
+            api_key=api_key,
+            user_wallet=user_wallet,
+            vehicle_ids=vehicle_ids
         )
         
         # Verify the request
         args, kwargs = fake_request.call_args
-        assert kwargs["data"]["type"] == agent_type
-        assert kwargs["data"]["variables"] == variables
-        assert kwargs["data"]["secrets"] == secrets
+        assert kwargs["data"]["secrets"]["DIMO_API_KEY"] == api_key
+        assert kwargs["data"]["variables"]["USER_WALLET"] == user_wallet
+        assert kwargs["data"]["variables"]["VEHICLE_IDS"] == vehicle_ids
         
         # Verify the response
         assert result["agentId"] == "agent-def456"
 
-    def test_create_agent_with_personality(self, monkeypatch):
-        """Test creating an agent with personality preset."""
+    def test_create_agent_with_custom_personality(self, monkeypatch):
+        """Test creating an agent with custom personality preset."""
         client = DIMO(env="Dev")
         
         fake_request = MagicMock(return_value={
             "agentId": "agent-ghi789",
             "type": "driver_agent_v1",
-            "personality": "uncle_mechanic",
+            "personality": "helpful_assistant",
             "createdAt": "2024-01-01T00:00:00Z"
         })
         monkeypatch.setattr(client, "request", fake_request)
         
         result = client.conversations.create_agent(
             developer_jwt="test_jwt",
-            agent_type="driver_agent_v1",
-            variables={"USER_WALLET": "0xabcdef", "VEHICLE_IDS": "[]"},
-            personality="uncle_mechanic"
+            api_key="0xapikey",
+            user_wallet="0xwallet",
+            personality="helpful_assistant"
         )
         
         # Verify the request
         args, kwargs = fake_request.call_args
-        assert kwargs["data"]["personality"] == "uncle_mechanic"
+        assert kwargs["data"]["personality"] == "helpful_assistant"
         
         # Verify the response
-        assert result["personality"] == "uncle_mechanic"
+        assert result["personality"] == "helpful_assistant"
 
     def test_create_agent_full_config(self, monkeypatch):
         """Test creating an agent with all configuration options."""
@@ -159,69 +158,65 @@ class TestConversationsCreateAgent:
         
         result = client.conversations.create_agent(
             developer_jwt="test_jwt",
+            api_key="0x1234567890abcdef",
+            user_wallet="0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
+            vehicle_ids="[1, 2, 3]",
             agent_type="driver_agent_v1",
-            variables={
-                "USER_WALLET": "0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
-                "VEHICLE_IDS": "[1, 2, 3]"
-            },
-            secrets={"VEHICLE_JWT": "eyJ..."},
             personality="uncle_mechanic"
         )
         
         # Verify all fields are in request
         args, kwargs = fake_request.call_args
         assert kwargs["data"]["type"] == "driver_agent_v1"
+        assert kwargs["data"]["personality"] == "uncle_mechanic"
+        assert kwargs["data"]["secrets"]["DIMO_API_KEY"] == "0x1234567890abcdef"
         assert kwargs["data"]["variables"]["USER_WALLET"] == "0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605"
         assert kwargs["data"]["variables"]["VEHICLE_IDS"] == "[1, 2, 3]"
-        assert kwargs["data"]["secrets"]["VEHICLE_JWT"] == "eyJ..."
-        assert kwargs["data"]["personality"] == "uncle_mechanic"
 
     def test_create_agent_invalid_types(self):
         """Test that type checking is enforced for parameters."""
         client = DIMO(env="Dev")
         
-        valid_variables = {"USER_WALLET": "0xabcdef", "VEHICLE_IDS": "[]"}
-        
         # Test invalid developer_jwt type
         with pytest.raises(DimoTypeError):
             client.conversations.create_agent(
                 developer_jwt=123,  # Should be string
-                agent_type="driver_agent_v1",
-                variables=valid_variables
+                api_key="0xapikey",
+                user_wallet="0xwallet"
             )
         
-        # Test invalid agent_type type
+        # Test invalid api_key type
         with pytest.raises(DimoTypeError):
             client.conversations.create_agent(
                 developer_jwt="test_jwt",
-                agent_type=123,  # Should be string
-                variables=valid_variables
+                api_key=123,  # Should be string
+                user_wallet="0xwallet"
             )
         
-        # Test invalid variables type
+        # Test invalid user_wallet type
         with pytest.raises(DimoTypeError):
             client.conversations.create_agent(
                 developer_jwt="test_jwt",
-                agent_type="driver_agent_v1",
-                variables="not_a_dict"  # Should be dict
+                api_key="0xapikey",
+                user_wallet=123  # Should be string
             )
         
-        # Test invalid secrets type
+        # Test invalid vehicle_ids type
         with pytest.raises(DimoTypeError):
             client.conversations.create_agent(
                 developer_jwt="test_jwt",
-                agent_type="driver_agent_v1",
-                variables=valid_variables,
-                secrets="not_a_dict"  # Should be dict or None
+                api_key="0xapikey",
+                user_wallet="0xwallet",
+                vehicle_ids=123  # Should be string or None
             )
         
         # Test invalid personality type
         with pytest.raises(DimoTypeError):
             client.conversations.create_agent(
                 developer_jwt="test_jwt",
-                agent_type="driver_agent_v1",
-                variables=valid_variables,
-                personality=123  # Should be string or None
+                api_key="0xapikey",
+                user_wallet="0xwallet",
+                personality=123  # Should be string
             )
 
 
@@ -636,6 +631,7 @@ class TestConversationsIntegration:
                 return {
                     "agentId": "agent-test123",
                     "type": "driver_agent_v1",
+                    "personality": "uncle_mechanic",
                     "createdAt": "2024-01-01T00:00:00Z"
                 }
             elif args[0] == "POST" and "/message" in args[2]:
@@ -653,13 +649,9 @@ class TestConversationsIntegration:
         # 1. Create agent
         agent = client.conversations.create_agent(
             developer_jwt="test_jwt",
-            agent_type="driver_agent_v1",
-            variables={
-                "USER_WALLET": "0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
-                "VEHICLE_IDS": "[872]"
-            },
-            secrets={"VEHICLE_JWT": "eyJ..."},
-            personality="uncle_mechanic"
+            api_key="0x1234567890abcdef",
+            user_wallet="0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
+            vehicle_ids="[872]"
         )
         assert agent["agentId"] == "agent-test123"
         assert ("POST", "/agents") in calls_made
