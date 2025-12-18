@@ -1,10 +1,10 @@
 """
-Tests for the DIMO Conversations API.
+Tests for the DIMO Agents API.
 
-These tests verify the functionality of the Conversations client including:
+These tests verify the functionality of the Agents client including:
 - Agent creation and deletion
 - Synchronous and streaming message sending
-- Conversation history retrieval
+- Agent history retrieval
 - Health checks
 - Error handling
 """
@@ -16,7 +16,7 @@ from dimo.dimo import DIMO
 from dimo.errors import HTTPError, DimoTypeError
 
 
-class TestConversationsHealthCheck:
+class TestAgentsHealthCheck:
     """Test the health_check endpoint."""
 
     def test_health_check_success(self, monkeypatch):
@@ -32,10 +32,10 @@ class TestConversationsHealthCheck:
         })
         monkeypatch.setattr(client, "request", fake_request)
         
-        result = client.conversations.health_check()
+        result = client.agents.health_check()
         
         # Verify the request was called correctly
-        fake_request.assert_called_once_with("GET", "Conversations", "/")
+        fake_request.assert_called_once_with("GET", "Agents", "/")
         
         # Verify the response
         assert result["status"] == "healthy"
@@ -43,7 +43,7 @@ class TestConversationsHealthCheck:
         assert "default_model" in result
 
 
-class TestConversationsCreateAgent:
+class TestAgentsCreateAgent:
     """Test the create_agent endpoint."""
 
     def test_create_agent_minimal(self, monkeypatch):
@@ -63,7 +63,7 @@ class TestConversationsCreateAgent:
         api_key = "0x1234567890abcdef"
         user_wallet = "0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605"
         
-        result = client.conversations.create_agent(
+        result = client.agents.create_agent(
             developer_jwt=dev_jwt,
             api_key=api_key,
             user_wallet=user_wallet,
@@ -75,7 +75,7 @@ class TestConversationsCreateAgent:
         args, kwargs = fake_request.call_args
         
         assert args[0] == "POST"
-        assert args[1] == "Conversations"
+        assert args[1] == "Agents"
         assert args[2] == "/agents"
         assert kwargs["data"]["type"] == "driver_agent_v1"
         assert kwargs["data"]["personality"] == "uncle_mechanic"
@@ -103,7 +103,7 @@ class TestConversationsCreateAgent:
         user_wallet = "0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605"
         vehicle_ids = "[872, 1234]"
         
-        result = client.conversations.create_agent(
+        result = client.agents.create_agent(
             developer_jwt=dev_jwt,
             api_key=api_key,
             user_wallet=user_wallet,
@@ -132,7 +132,7 @@ class TestConversationsCreateAgent:
         })
         monkeypatch.setattr(client, "request", fake_request)
         
-        result = client.conversations.create_agent(
+        result = client.agents.create_agent(
             developer_jwt="test_jwt",
             api_key="0xapikey",
             user_wallet="0xwallet",
@@ -159,7 +159,7 @@ class TestConversationsCreateAgent:
         })
         monkeypatch.setattr(client, "request", fake_request)
         
-        result = client.conversations.create_agent(
+        result = client.agents.create_agent(
             developer_jwt="test_jwt",
             api_key="0x1234567890abcdef",
             user_wallet="0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
@@ -182,7 +182,7 @@ class TestConversationsCreateAgent:
         
         # Test invalid developer_jwt type
         with pytest.raises(DimoTypeError):
-            client.conversations.create_agent(
+            client.agents.create_agent(
                 developer_jwt=123,  # Should be string
                 api_key="0xapikey",
                 user_wallet="0xwallet",
@@ -191,7 +191,7 @@ class TestConversationsCreateAgent:
         
         # Test invalid api_key type
         with pytest.raises(DimoTypeError):
-            client.conversations.create_agent(
+            client.agents.create_agent(
                 developer_jwt="test_jwt",
                 api_key=123,  # Should be string
                 user_wallet="0xwallet",
@@ -200,7 +200,7 @@ class TestConversationsCreateAgent:
         
         # Test invalid user_wallet type
         with pytest.raises(DimoTypeError):
-            client.conversations.create_agent(
+            client.agents.create_agent(
                 developer_jwt="test_jwt",
                 api_key="0xapikey",
                 user_wallet=123,  # Should be string
@@ -209,7 +209,7 @@ class TestConversationsCreateAgent:
         
         # Test invalid agent_type type
         with pytest.raises(DimoTypeError):
-            client.conversations.create_agent(
+            client.agents.create_agent(
                 developer_jwt="test_jwt",
                 api_key="0xapikey",
                 user_wallet="0xwallet",
@@ -218,7 +218,7 @@ class TestConversationsCreateAgent:
         
         # Test invalid vehicle_ids type
         with pytest.raises(DimoTypeError):
-            client.conversations.create_agent(
+            client.agents.create_agent(
                 developer_jwt="test_jwt",
                 api_key="0xapikey",
                 user_wallet="0xwallet",
@@ -228,7 +228,7 @@ class TestConversationsCreateAgent:
         
         # Test invalid personality type
         with pytest.raises(DimoTypeError):
-            client.conversations.create_agent(
+            client.agents.create_agent(
                 developer_jwt="test_jwt",
                 api_key="0xapikey",
                 user_wallet="0xwallet",
@@ -237,7 +237,7 @@ class TestConversationsCreateAgent:
             )
 
 
-class TestConversationsDeleteAgent:
+class TestAgentsDeleteAgent:
     """Test the delete_agent endpoint."""
 
     def test_delete_agent_success(self, monkeypatch):
@@ -253,7 +253,7 @@ class TestConversationsDeleteAgent:
         dev_jwt = "test_developer_jwt"
         agent_id = "agent-abc123"
         
-        result = client.conversations.delete_agent(
+        result = client.agents.delete_agent(
             developer_jwt=dev_jwt,
             agent_id=agent_id
         )
@@ -263,7 +263,7 @@ class TestConversationsDeleteAgent:
         args, kwargs = fake_request.call_args
         
         assert args[0] == "DELETE"
-        assert args[1] == "Conversations"
+        assert args[1] == "Agents"
         assert args[2] == "/agents/agent-abc123"
         
         # Verify the response
@@ -275,19 +275,19 @@ class TestConversationsDeleteAgent:
         client = DIMO(env="Dev")
         
         with pytest.raises(DimoTypeError):
-            client.conversations.delete_agent(
+            client.agents.delete_agent(
                 developer_jwt=123,  # Should be string
                 agent_id="agent-abc123"
             )
         
         with pytest.raises(DimoTypeError):
-            client.conversations.delete_agent(
+            client.agents.delete_agent(
                 developer_jwt="test_jwt",
                 agent_id=123  # Should be string
             )
 
 
-class TestConversationsSendMessage:
+class TestAgentsSendMessage:
     """Test the send_message endpoint (synchronous)."""
 
     def test_send_message_basic(self, monkeypatch):
@@ -307,7 +307,7 @@ class TestConversationsSendMessage:
         agent_id = "agent-abc123"
         message = "What's my car's make and model?"
         
-        result = client.conversations.send_message(
+        result = client.agents.send_message(
             developer_jwt=dev_jwt,
             agent_id=agent_id,
             message=message
@@ -317,7 +317,7 @@ class TestConversationsSendMessage:
         args, kwargs = fake_request.call_args
         
         assert args[0] == "POST"
-        assert args[1] == "Conversations"
+        assert args[1] == "Agents"
         assert args[2] == "/agents/agent-abc123/message"
         assert kwargs["data"]["message"] == message
         
@@ -339,7 +339,7 @@ class TestConversationsSendMessage:
         })
         monkeypatch.setattr(client, "request", fake_request)
         
-        result = client.conversations.send_message(
+        result = client.agents.send_message(
             developer_jwt="test_jwt",
             agent_id="agent-abc123",
             message="What's the speed?",
@@ -364,7 +364,7 @@ class TestConversationsSendMessage:
         })
         monkeypatch.setattr(client, "request", fake_request)
         
-        result = client.conversations.send_message(
+        result = client.agents.send_message(
             developer_jwt="test_jwt",
             agent_id="agent-abc123",
             message="Hello",
@@ -380,21 +380,21 @@ class TestConversationsSendMessage:
         client = DIMO(env="Dev")
         
         with pytest.raises(DimoTypeError):
-            client.conversations.send_message(
+            client.agents.send_message(
                 developer_jwt=123,  # Should be string
                 agent_id="agent-abc123",
                 message="Hello"
             )
         
         with pytest.raises(DimoTypeError):
-            client.conversations.send_message(
+            client.agents.send_message(
                 developer_jwt="test_jwt",
                 agent_id="agent-abc123",
                 message=123  # Should be string
             )
 
 
-class TestConversationsStreamMessage:
+class TestAgentsStreamMessage:
     """Test the stream_message endpoint (SSE streaming)."""
 
     def test_stream_message_success(self, monkeypatch):
@@ -420,14 +420,14 @@ class TestConversationsStreamMessage:
         # Mock session.request
         mock_session = Mock()
         mock_session.request = Mock(return_value=mock_response)
-        monkeypatch.setattr(client.conversations, "_session", mock_session)
+        monkeypatch.setattr(client.agents, "_session", mock_session)
         
         dev_jwt = "test_developer_jwt"
         agent_id = "agent-abc123"
         message = "What's my car?"
         
         # Collect streamed chunks
-        chunks = list(client.conversations.stream_message(
+        chunks = list(client.agents.stream_message(
             developer_jwt=dev_jwt,
             agent_id=agent_id,
             message=message
@@ -466,10 +466,10 @@ class TestConversationsStreamMessage:
         
         mock_session = Mock()
         mock_session.request = Mock(return_value=mock_response)
-        monkeypatch.setattr(client.conversations, "_session", mock_session)
+        monkeypatch.setattr(client.agents, "_session", mock_session)
         
         # Call with overrides
-        chunks = list(client.conversations.stream_message(
+        chunks = list(client.agents.stream_message(
             developer_jwt="test_jwt",
             agent_id="agent-abc123",
             message="Hello",
@@ -503,10 +503,10 @@ class TestConversationsStreamMessage:
         
         mock_session = Mock()
         mock_session.request = Mock(return_value=mock_response)
-        monkeypatch.setattr(client.conversations, "_session", mock_session)
+        monkeypatch.setattr(client.agents, "_session", mock_session)
         
         # Collect chunks - malformed one should be skipped
-        chunks = list(client.conversations.stream_message(
+        chunks = list(client.agents.stream_message(
             developer_jwt="test_jwt",
             agent_id="agent-abc123",
             message="Test"
@@ -534,11 +534,11 @@ class TestConversationsStreamMessage:
         
         mock_session = Mock()
         mock_session.request = Mock(side_effect=mock_exception)
-        monkeypatch.setattr(client.conversations, "_session", mock_session)
+        monkeypatch.setattr(client.agents, "_session", mock_session)
         
         # Verify HTTPError is raised
         with pytest.raises(HTTPError) as exc_info:
-            list(client.conversations.stream_message(
+            list(client.agents.stream_message(
                 developer_jwt="test_jwt",
                 agent_id="bad-agent-id",
                 message="Test"
@@ -547,11 +547,11 @@ class TestConversationsStreamMessage:
         assert exc_info.value.status == 404
 
 
-class TestConversationsGetHistory:
+class TestAgentsGetHistory:
     """Test the get_history endpoint."""
 
     def test_get_history_default_limit(self, monkeypatch):
-        """Test retrieving conversation history with default limit."""
+        """Test retrieving agent history with default limit."""
         client = DIMO(env="Dev")
         
         fake_request = MagicMock(return_value={
@@ -567,7 +567,7 @@ class TestConversationsGetHistory:
         dev_jwt = "test_developer_jwt"
         agent_id = "agent-abc123"
         
-        result = client.conversations.get_history(
+        result = client.agents.get_history(
             developer_jwt=dev_jwt,
             agent_id=agent_id
         )
@@ -576,7 +576,7 @@ class TestConversationsGetHistory:
         args, kwargs = fake_request.call_args
         
         assert args[0] == "GET"
-        assert args[1] == "Conversations"
+        assert args[1] == "Agents"
         assert args[2] == "/agents/agent-abc123/history"
         assert kwargs["params"]["limit"] == 100  # Default limit
         
@@ -586,7 +586,7 @@ class TestConversationsGetHistory:
         assert result["total"] == 2
 
     def test_get_history_custom_limit(self, monkeypatch):
-        """Test retrieving conversation history with custom limit."""
+        """Test retrieving agent history with custom limit."""
         client = DIMO(env="Dev")
         
         fake_request = MagicMock(return_value={
@@ -598,7 +598,7 @@ class TestConversationsGetHistory:
         })
         monkeypatch.setattr(client, "request", fake_request)
         
-        result = client.conversations.get_history(
+        result = client.agents.get_history(
             developer_jwt="test_jwt",
             agent_id="agent-abc123",
             limit=50
@@ -613,26 +613,26 @@ class TestConversationsGetHistory:
         client = DIMO(env="Dev")
         
         with pytest.raises(DimoTypeError):
-            client.conversations.get_history(
+            client.agents.get_history(
                 developer_jwt=123,  # Should be string
                 agent_id="agent-abc123"
             )
         
         with pytest.raises(DimoTypeError):
-            client.conversations.get_history(
+            client.agents.get_history(
                 developer_jwt="test_jwt",
                 agent_id=123  # Should be string
             )
         
         with pytest.raises(DimoTypeError):
-            client.conversations.get_history(
+            client.agents.get_history(
                 developer_jwt="test_jwt",
                 agent_id="agent-abc123",
                 limit="not_an_int"  # Should be int
             )
 
 
-class TestConversationsIntegration:
+class TestAgentsIntegration:
     """Integration tests demonstrating complete workflows."""
 
     def test_full_agent_lifecycle(self, monkeypatch):
@@ -664,7 +664,7 @@ class TestConversationsIntegration:
         monkeypatch.setattr(client, "request", fake_request)
         
         # 1. Create agent
-        agent = client.conversations.create_agent(
+        agent = client.agents.create_agent(
             developer_jwt="test_jwt",
             api_key="0x1234567890abcdef",
             user_wallet="0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
@@ -675,7 +675,7 @@ class TestConversationsIntegration:
         assert ("POST", "/agents") in calls_made
         
         # 2. Send message
-        response = client.conversations.send_message(
+        response = client.agents.send_message(
             developer_jwt="test_jwt",
             agent_id=agent["agentId"],
             message="What's my vehicle?"
@@ -684,7 +684,7 @@ class TestConversationsIntegration:
         assert "Tesla" in response["response"]
         
         # 3. Delete agent
-        delete_result = client.conversations.delete_agent(
+        delete_result = client.agents.delete_agent(
             developer_jwt="test_jwt",
             agent_id=agent["agentId"]
         )

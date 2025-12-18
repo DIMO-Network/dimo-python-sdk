@@ -4,9 +4,9 @@ from requests import Session, RequestException
 import json
 
 
-class Conversations:
+class Agents:
     """
-    Client for the DIMO Conversations API.
+    Client for the DIMO Agents API.
 
     This API enables developers to create conversational AI agents that can query
     vehicle data, telemetry data, and perform web searches on behalf of users.
@@ -35,10 +35,10 @@ class Conversations:
 
         Example:
             >>> dimo = DIMO("Production")
-            >>> health = dimo.conversations.health_check()
+            >>> health = dimo.agents.health_check()
             >>> print(health['status'])
         """
-        response = self._request("GET", "Conversations", "/")
+        response = self._request("GET", "Agents", "/")
         return response
 
     def create_agent(
@@ -46,8 +46,8 @@ class Conversations:
         developer_jwt: str,
         api_key: str,
         user_wallet: str,
-        agent_type: str,
         vehicle_ids: Optional[str] = None,
+        agent_type: str = "driver_agent_v1",
         personality: str = "uncle_mechanic",
     ) -> Dict:
         """
@@ -75,7 +75,7 @@ class Conversations:
         Example:
             >>> dimo = DIMO("Production")
             >>> dev_jwt = "your_developer_jwt"
-            >>> agent = dimo.conversations.create_agent(
+            >>> agent = dimo.agents.create_agent(
             ...     developer_jwt=dev_jwt,
             ...     api_key="0x1234567890abcdef...",
             ...     user_wallet="0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
@@ -106,7 +106,7 @@ class Conversations:
 
         response = self._request(
             "POST",
-            "Conversations",
+            "Agents",
             "/agents",
             headers=self._get_auth_headers(developer_jwt),
             data=body,
@@ -132,7 +132,7 @@ class Conversations:
         Example:
             >>> dimo = DIMO("Production")
             >>> dev_jwt = "your_developer_jwt"
-            >>> result = dimo.conversations.delete_agent(
+            >>> result = dimo.agents.delete_agent(
             ...     developer_jwt=dev_jwt,
             ...     agent_id="agent-abc123"
             ... )
@@ -143,7 +143,7 @@ class Conversations:
 
         response = self._request(
             "DELETE",
-            "Conversations",
+            "Agents",
             f"/agents/{agent_id}",
             headers=self._get_auth_headers(developer_jwt),
         )
@@ -179,7 +179,7 @@ class Conversations:
         Example:
             >>> dimo = DIMO("Production")
             >>> dev_jwt = "your_developer_jwt"
-            >>> response = dimo.conversations.send_message(
+            >>> response = dimo.agents.send_message(
             ...     developer_jwt=dev_jwt,
             ...     agent_id="agent-abc123",
             ...     message="What's the make and model of my vehicle?"
@@ -200,7 +200,7 @@ class Conversations:
 
         response = self._request(
             "POST",
-            "Conversations",
+            "Agents",
             f"/agents/{agent_id}/message",
             headers=self._get_auth_headers(developer_jwt),
             data=body,
@@ -236,7 +236,7 @@ class Conversations:
         Example:
             >>> dimo = DIMO("Production")
             >>> dev_jwt = "your_developer_jwt"
-            >>> for chunk in dimo.conversations.stream_message(
+            >>> for chunk in dimo.agents.stream_message(
             ...     developer_jwt=dev_jwt,
             ...     agent_id="agent-abc123",
             ...     message="What's my current speed?"
@@ -263,7 +263,7 @@ class Conversations:
         headers["Content-Type"] = "application/json"
 
         # Build full URL
-        url = self._get_full_path("Conversations", f"/agents/{agent_id}/stream")
+        url = self._get_full_path("Agents", f"/agents/{agent_id}/stream")
 
         # Make streaming request directly with session
         try:
@@ -303,7 +303,7 @@ class Conversations:
         limit: int = 100,
     ) -> Dict:
         """
-        Retrieve all messages in a conversation.
+        Retrieve all messages in an agent's conversation history.
 
         Args:
             developer_jwt (str): Developer JWT token for authentication
@@ -321,7 +321,7 @@ class Conversations:
         Example:
             >>> dimo = DIMO("Production")
             >>> dev_jwt = "your_developer_jwt"
-            >>> history = dimo.conversations.get_history(
+            >>> history = dimo.agents.get_history(
             ...     developer_jwt=dev_jwt,
             ...     agent_id="agent-abc123",
             ...     limit=50
@@ -335,9 +335,10 @@ class Conversations:
 
         response = self._request(
             "GET",
-            "Conversations",
+            "Agents",
             f"/agents/{agent_id}/history",
             headers=self._get_auth_headers(developer_jwt),
             params={"limit": limit},
         )
         return response
+

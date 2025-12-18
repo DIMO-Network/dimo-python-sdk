@@ -2,7 +2,7 @@ from requests import Session
 
 from .api.attestation import Attestation
 from .api.auth import Auth
-from .api.conversations import Conversations
+from .api.agents import Agents
 from .api.device_definitions import DeviceDefinitions
 from .api.token_exchange import TokenExchange
 from .api.trips import Trips
@@ -76,7 +76,7 @@ class DIMO:
         mapping = {
             "attestation": (Attestation, ("request", "_get_auth_headers")),
             "auth": (Auth, ("request", "_get_auth_headers", "env", "self")),
-            "conversations": (Conversations, ("request", "_get_auth_headers", "_get_full_path", "session")),
+            "agents": (Agents, ("request", "_get_auth_headers", "_get_full_path", "session")),
             "device_definitions": (DeviceDefinitions, ("request", "_get_auth_headers")),
             "token_exchange": (
                 TokenExchange,

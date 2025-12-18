@@ -29,7 +29,7 @@ The SDK includes comprehensive unit tests to ensure reliability and correctness.
 
 4. **Run specific test files:**
    ```bash
-   pytest tests/test_conversations.py -v
+   pytest tests/test_agents.py -v
    ```
 
 The test suite uses `pytest` and includes tests for all major SDK functionality including authentication, API endpoints, GraphQL queries, and error handling
