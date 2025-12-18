@@ -44,25 +44,29 @@ class Conversations:
     def create_agent(
         self,
         developer_jwt: str,
-        user: str,
-        vehicle_ids: Optional[List[int]] = None,
+        api_key: str,
+        user_wallet: str,
+        agent_type: str,
+        vehicle_ids: Optional[str] = None,
+        personality: str = "uncle_mechanic",
     ) -> Dict:
         """
-        Create a new conversational agent for a user with optional vehicle access.
+        Create a new conversational agent with the specified configuration.
 
         Args:
             developer_jwt (str): Developer JWT token for authentication
-            user (str): Wallet address (0x...) or email identifying the user
-            vehicle_ids (list[int], optional): List of vehicle token IDs this agent can access.
-                - None (default): Unrestricted access, ownership validated at runtime
-                - []: Empty list means no vehicle access (identity queries only)
-                - [872, 1234]: Explicit list of allowed vehicles
+            api_key (str): DIMO API key for the agent to access vehicle data
+            user_wallet (str): User's wallet address (e.g., "0x2345...")
+            agent_type (str): The type of agent to create (e.g., "driver_agent_v1")
+            vehicle_ids (str, optional): JSON array string of vehicle token IDs (e.g., "[1, 2, 3]").
+                If not provided, agent will have access to all vehicles owned by the user.
+            personality (str, optional): Personality preset for the agent. Defaults to "uncle_mechanic"
 
         Returns:
-            dict: Agent information including agentId, mode, user, vehicleIds, and createdAt
+            dict: Agent information including agentId and configuration details
 
         Behavior:
-            - One agent per user (idempotent creation)
+            - Creates a new agent with the specified type and configuration
             - Validates configuration and mode detection
             - Creates/reuses shared identity subagent
             - Creates per-vehicle telemetry subagents with token exchange
@@ -73,20 +77,31 @@ class Conversations:
             >>> dev_jwt = "your_developer_jwt"
             >>> agent = dimo.conversations.create_agent(
             ...     developer_jwt=dev_jwt,
-            ...     user="0x1234567890abcdef1234567890abcdef12345678",
-            ...     vehicle_ids=[872, 1234],
+            ...     api_key="0x1234567890abcdef...",
+            ...     user_wallet="0x86b04f6d1D9E79aD7eB31cDEAF37442B00d64605",
+            ...     agent_type="driver_agent_v1",
+            ...     vehicle_ids="[1, 2, 3]",
             ... )
             >>> print(agent['agentId'])
         """
         check_type("developer_jwt", developer_jwt, str)
-        check_type("user", user, str)
-        check_optional_type("vehicle_ids", vehicle_ids, list)
-        # check_type("enable_websearch", enable_websearch, bool)
+        check_type("api_key", api_key, str)
+        check_type("user_wallet", user_wallet, str)
+        check_optional_type("vehicle_ids", vehicle_ids, str)
+        check_type("agent_type", agent_type, str)
+        check_type("personality", personality, str)
 
+        # Build variables dict
+        variables = {"USER_WALLET": user_wallet}
+        if vehicle_ids is not None:
+            variables["VEHICLE_IDS"] = vehicle_ids
+
+        # Build request body
         body = {
-            "user": user,
-            "vehicleIds": vehicle_ids,
-            # "enableWebsearch": enable_websearch,
+            "personality": personality,
+            "secrets": {"DIMO_API_KEY": api_key},
+            "type": agent_type,
+            "variables": variables,
         }
 
         response = self._request(
