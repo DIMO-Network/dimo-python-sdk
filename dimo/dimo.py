@@ -5,6 +5,7 @@ from .api.auth import Auth
 from .api.conversations import Conversations
 from .api.device_definitions import DeviceDefinitions
 from .api.token_exchange import TokenExchange
+from .api.fetch import Fetch
 from .api.trips import Trips
 from .api.valuations import Valuations
 from .api.vehicle_triggers import VehicleTriggers
@@ -78,6 +79,7 @@ class DIMO:
             "auth": (Auth, ("request", "_get_auth_headers", "env", "self")),
             "conversations": (Conversations, ("request", "_get_auth_headers", "_get_full_path", "session")),
             "device_definitions": (DeviceDefinitions, ("request", "_get_auth_headers")),
+            "fetch": (Fetch, ("request", "_get_auth_headers")),
             "token_exchange": (
                 TokenExchange,
                 ("request", "_get_auth_headers", "identity", "self"),
